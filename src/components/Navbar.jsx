@@ -14,6 +14,7 @@ export const Navbar = () => {
 					</Link>
 				</div>
 			</div>
+			<Link to="/contact">Contacto</Link>
 		</nav>
 	);
 };
