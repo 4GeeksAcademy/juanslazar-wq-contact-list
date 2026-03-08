@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const Addcontact = () => {
     const navigate = useNavigate();
+    const { dispatch } = useGlobalReducer();
 
     const [formData, setFormData] = useState({
         name: "",
@@ -13,19 +15,32 @@ export const Addcontact = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
         setFormData({
             ...formData,
             [name]: value
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log("Nuevo contacto:", formData);
+        try {
+            const res = await fetch("https://playground.4geeks.com/contact/agendas/Juan/contacts", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            });
 
-        navigate("/");
+            if (!res.ok) throw new Error("Error al guardar contacto");
+
+            const newContact = await res.json();
+            dispatch({ type: "add_contact", payload: newContact });
+
+            navigate("/");
+
+        } catch (error) {
+            console.error("Error:", error);
+        }
     };
 
     return (
